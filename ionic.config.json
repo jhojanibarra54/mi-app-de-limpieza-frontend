@@ -1,0 +1,7 @@
+{
+  "name": "Mi App de Limpieza",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "angular-standalone"
+}
