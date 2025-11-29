@@ -1,0 +1,56 @@
+ion-content {
+  --background: #f0f2f5;
+}
+
+.chat-container {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.message-wrapper {
+  display: flex;
+  width: 100%;
+}
+
+.message {
+  max-width: 80%;
+  padding: 8px 12px;
+  border-radius: 18px;
+  background: #ffffff;
+  box-shadow: 0 1px 1px rgba(0, 0, 0, 0.05);
+}
+
+.message-content {
+  word-wrap: break-word;
+}
+
+.message-time {
+  font-size: 0.7rem;
+  color: #888;
+  text-align: right;
+  margin-top: 4px;
+}
+
+/* Mensajes propios (enviados por el usuario actual) */
+.message-wrapper.own-message {
+  justify-content: flex-end;
+}
+
+.message-wrapper.own-message .message {
+  background: #dcf8c6;
+}
+
+/* Barra de input */
+.chat-input-toolbar {
+  --padding-start: 8px;
+  --padding-end: 8px;
+}
+
+.chat-input {
+  background: #fff;
+  border-radius: 20px;
+  padding: 0 12px !important;
+  --padding-start: 12px !important;
+  --padding-end: 12px !important;
+}

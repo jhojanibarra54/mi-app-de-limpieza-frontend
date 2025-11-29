@@ -1,0 +1,27 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/cleaner-home"></ion-back-button>
+    </ion-buttons>
+    <ion-title>Mensajes</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  <div *ngIf="isLoading" class="ion-text-center">
+    <ion-spinner name="crescent"></ion-spinner>
+  </div>
+
+  <ion-list *ngIf="!isLoading && conversations.length > 0">
+    <ion-item *ngFor="let conv of conversations" [routerLink]="['/chat', conv.id]" detail>
+      <ion-label>
+        <h2>{{ conv.other_user_name }}</h2>
+        <p>Servicio #{{ conv.id }}</p>
+      </ion-label>
+    </ion-item>
+  </ion-list>
+
+  <div *ngIf="!isLoading && conversations.length === 0" class="empty-state">
+    <p>No tienes conversaciones activas.</p>
+  </div>
+</ion-content>

@@ -1,4 +1,5 @@
 {
+  
   "$schema": "./node_modules/@angular/cli/lib/config/schema.json",
   "version": 1,
   "newProjectRoot": "projects",
@@ -9,7 +10,9 @@
         "@ionic/angular-toolkit:page": {
           "styleext": "scss",
           "standalone": true
+          
         }
+        
       },
       "root": "",
       "sourceRoot": "src",
@@ -35,7 +38,11 @@
                 "output": "assets"
               }
             ],
-            "styles": ["src/global.scss", "src/theme/variables.scss"],
+            "styles": [
+              "src/global.scss",
+              "src/theme/variables.scss",
+              "node_modules/leaflet/dist/leaflet.css"
+            ],
             "scripts": [],
             "browser": "src/main.ts"
           },
@@ -80,7 +87,9 @@
               "buildTarget": "app:build:production"
             },
             "development": {
-              "buildTarget": "app:build:development"
+              "buildTarget": "app:build:development",
+              "host": "localhost",
+              "port": 8100
             },
             "ci": {
               "progress": false
@@ -129,7 +138,10 @@
     }
   },
   "cli": {
-    "schematicCollections": ["@ionic/angular-toolkit"]
+    "schematicCollections": [
+      "@ionic/angular-toolkit"
+    ],
+    "analytics": "1a198478-dd88-4a15-b4b9-10023733a463"
   },
   "schematics": {
     "@ionic/angular-toolkit:component": {

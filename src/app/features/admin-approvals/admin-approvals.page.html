@@ -1,0 +1,52 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/admin-dashboard"></ion-back-button>
+    </ion-buttons>
+    <ion-title>Aprobaciones Pendientes</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="authService.logout()">
+        <ion-icon slot="icon-only" name="log-out-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  <div *ngIf="isLoading" class="ion-text-center">
+    <ion-spinner name="crescent"></ion-spinner>
+  </div>
+
+  <div *ngIf="!isLoading && applications.length > 0">
+    <ion-card *ngFor="let app of applications">
+      <ion-card-header>
+        <ion-card-title>{{ app.name }}</ion-card-title>
+        <ion-card-subtitle>{{ app.email }}</ion-card-subtitle>
+      </ion-card-header>
+      <ion-card-content>
+        <p *ngIf="app.message"><strong>Mensaje:</strong> {{ app.message }}</p>
+        <p *ngIf="!app.message">El usuario no dejó ningún mensaje.</p>
+        
+        <ion-button fill="outline" (click)="viewDocument(app.document_url)">
+          <ion-icon slot="start" name="document-text-outline"></ion-icon>
+          Ver Documento
+        </ion-button>
+
+        <div class="action-buttons">
+          <ion-button color="danger" (click)="processApplication(app.id, app.user_id, 'reject')">
+            <ion-icon slot="start" name="close-circle-outline"></ion-icon>
+            Rechazar
+          </ion-button>
+          <ion-button color="success" (click)="processApplication(app.id, app.user_id, 'approve')">
+            <ion-icon slot="start" name="checkmark-circle-outline"></ion-icon>
+            Aprobar
+          </ion-button>
+        </div>
+      </ion-card-content>
+    </ion-card>
+  </div>
+
+  <div *ngIf="!isLoading && applications.length === 0" class="empty-state">
+    <p>No hay solicitudes pendientes de revisión.</p>
+  </div>
+</ion-content>

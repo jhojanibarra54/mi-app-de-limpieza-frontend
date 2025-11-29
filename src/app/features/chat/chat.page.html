@@ -1,0 +1,39 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/"></ion-back-button>
+    </ion-buttons>
+    <ion-title>Chat de Servicio</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  <div *ngIf="isLoading" class="ion-text-center">
+    <ion-spinner name="crescent"></ion-spinner>
+  </div>
+
+  <div class="chat-container">
+    <div *ngFor="let msg of messages" class="message-wrapper" [class.own-message]="msg.sender_id === currentUserId">
+      <div class="message">
+        <div class="message-content">{{ msg.message }}</div>
+        <div class="message-time">{{ msg.created_at | date:'shortTime' }}</div>
+      </div>
+    </div>
+  </div>
+</ion-content>
+
+<ion-footer>
+  <ion-toolbar class="chat-input-toolbar">
+    <ion-input
+      [(ngModel)]="newMessage"
+      placeholder="Escribe un mensaje..."
+      (keyup.enter)="sendMessage()"
+      class="chat-input"
+    ></ion-input>
+    <ion-buttons slot="end">
+      <ion-button (click)="sendMessage()" [disabled]="newMessage.trim() === ''">
+        <ion-icon slot="icon-only" name="send"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-footer>

@@ -1,0 +1,33 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Filtrar por Servicio</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="closeModal()">
+        <ion-icon slot="icon-only" name="close"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  <div *ngIf="isLoading" class="ion-text-center ion-padding">
+    <ion-spinner name="crescent"></ion-spinner>
+  </div>
+
+  <ion-list *ngIf="!isLoading">
+    <ion-radio-group [(ngModel)]="selectedServiceId">
+      <ion-list-header>
+        <ion-label>Selecciona un servicio</ion-label>
+      </ion-list-header>
+      <ion-item *ngFor="let service of services">
+        <ion-radio [value]="service.id" labelPlacement="end">{{ service.service_name }}</ion-radio>
+      </ion-item>
+      <ion-item *ngIf="services.length === 0">
+        <ion-label>No hay servicios disponibles para filtrar.</ion-label>
+      </ion-item>
+    </ion-radio-group>
+  </ion-list>
+
+  <ion-button expand="block" (click)="applyFilter()" [disabled]="!selectedServiceId">Aplicar Filtro</ion-button>
+  <ion-button expand="block" fill="outline" (click)="clearFilter()">Mostrar Todos</ion-button>
+</ion-content>

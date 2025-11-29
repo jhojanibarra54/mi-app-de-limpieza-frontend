@@ -1,0 +1,302 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start" *ngIf="currentView !== 'dashboard'">
+      <ion-button (click)="setView('dashboard')">
+        <ion-icon slot="icon-only" name="arrow-back-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <ion-title>{{ pageTitle }}</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="logout()">
+        <ion-icon slot="icon-only" name="log-out-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  <!-- VISTA DEL PANEL PRINCIPAL -->
+  <div *ngIf="currentView === 'dashboard'">
+    <ion-grid>
+      <ion-row>
+        <!-- Tarjeta para Gestionar Servicios -->
+        <ion-col size="6" size-md="4">
+          <ion-card button="true" class="ion-text-center" (click)="setView('services')">
+            <ion-card-header>
+              <ion-icon name="list-outline" color="primary" class="dashboard-icon"></ion-icon>
+            </ion-card-header>
+            <ion-card-content>
+              <ion-label>Gestionar Servicios</ion-label>
+              <ion-badge color="primary" *ngIf="!isLoading">{{ services.length }}</ion-badge>
+            </ion-card-content>
+          </ion-card>
+        </ion-col>
+
+        <!-- Tarjeta para Aprobaciones -->
+        <ion-col size="6" size-md="4">
+          <ion-card button="true" class="ion-text-center" (click)="goToApprovals()">
+            <ion-card-header>
+              <ion-icon name="person-add-outline" color="secondary" class="dashboard-icon"></ion-icon>
+            </ion-card-header>
+            <ion-card-content>
+              <ion-label>Aprobaciones</ion-label>
+              <!-- Podrías añadir un badge aquí si tuvieras el contador de aprobaciones pendientes -->
+            </ion-card-content>
+          </ion-card>
+        </ion-col>
+
+        <!-- Tarjeta para Resumen Financiero -->
+        <ion-col size="12" size-md="4">
+          <ion-card button="true" class="ion-text-center" (click)="setView('financials')">
+            <ion-card-header>
+              <ion-icon name="cash-outline" color="success" class="dashboard-icon"></ion-icon>
+            </ion-card-header>
+            <ion-card-content>
+              <ion-label>Finanzas</ion-label>
+            </ion-card-content>
+          </ion-card>
+        </ion-col>
+      </ion-row>
+      <ion-row>
+        <!-- Tarjeta para Solicitudes de Retiro -->
+        <ion-col size="12" size-md="4">
+          <ion-card button="true" class="ion-text-center" (click)="setView('payouts')">
+            <ion-card-header>
+              <ion-icon name="wallet-outline" color="warning" class="dashboard-icon"></ion-icon>
+            </ion-card-header>
+            <ion-card-content>
+              <ion-label>Solicitudes de Retiro</ion-label>
+            </ion-card-content>
+          </ion-card>
+        </ion-col>
+
+        <!-- Tarjeta para Gestionar Usuarios -->
+        <ion-col size="12" size-md="4">
+          <ion-card button="true" class="ion-text-center" (click)="setView('users')">
+            <ion-card-header>
+              <ion-icon name="people-outline" color="tertiary" class="dashboard-icon"></ion-icon>
+            </ion-card-header>
+            <ion-card-content>
+              <ion-label>Gestionar Usuarios</ion-label>
+              <ion-badge color="tertiary" *ngIf="!isLoadingUsers">{{ users.length }}</ion-badge>
+            </ion-card-content>
+          </ion-card>
+        </ion-col>
+
+      </ion-row>
+    </ion-grid>
+  </div>
+
+  <!-- VISTA DEL RESUMEN FINANCIERO -->
+  <div *ngIf="currentView === 'financials'">
+    <div *ngIf="isLoadingFinancials" class="ion-text-center">
+      <ion-spinner name="crescent"></ion-spinner>
+      <p>Cargando resumen financiero...</p>
+    </div>
+
+    <div *ngIf="financialError" class="ion-text-center error-message">
+      <p>{{ financialError }}</p>
+      <ion-button (click)="loadFinancialData()">Reintentar</ion-button>
+    </div>
+
+    <div *ngIf="financialSummary">
+      <!-- Tarjetas de Resumen General -->
+      <ion-grid>
+        <ion-row>
+          <ion-col size="12" size-md="6">
+            <ion-card color="light">
+              <ion-card-header class="ion-text-center">
+                <ion-icon name="trending-up-outline" color="success"></ion-icon>
+                <ion-card-subtitle>Ingresos Totales (Bruto)</ion-card-subtitle>
+                <ion-card-title>{{ financialSummary.total_revenue | currency:'COP':'symbol':'1.0-0' }}</ion-card-title>
+              </ion-card-header>
+            </ion-card>
+          </ion-col>
+          <ion-col size="12" size-md="6">
+            <ion-card color="light">
+              <ion-card-header class="ion-text-center">
+                <ion-icon name="trending-up-outline" color="primary"></ion-icon>
+                <ion-card-subtitle>Comisión de la Plataforma</ion-card-subtitle>
+                <ion-card-title>{{ financialSummary.platform_commission | currency:'COP':'symbol':'1.0-0' }}</ion-card-title>
+              </ion-card-header>
+            </ion-card>
+          </ion-col>
+          <ion-col size="12" size-md="6">
+            <ion-card color="light">
+              <ion-card-header class="ion-text-center">
+                <ion-icon name="trending-down-outline" color="danger"></ion-icon>
+                <ion-card-subtitle>Limpiadores nos Deben</ion-card-subtitle>
+                <ion-card-title>{{ financialSummary.cleaners_debt_to_platform | currency:'COP':'symbol':'1.0-0' }}</ion-card-title>
+              </ion-card-header>
+            </ion-card>
+          </ion-col>
+          <ion-col size="12" size-md="6">
+            <ion-card color="light">
+              <ion-card-header class="ion-text-center">
+                <ion-icon name="trending-up-outline" color="warning"></ion-icon>
+                <ion-card-subtitle>Debemos a Limpiadores</ion-card-subtitle>
+                <ion-card-title>{{ financialSummary.platform_owes_to_cleaners | currency:'COP':'symbol':'1.0-0' }}</ion-card-title>
+              </ion-card-header>
+            </ion-card>
+          </ion-col>
+        </ion-row>
+      </ion-grid>
+
+      <!-- Lista de Limpiadores Deudores -->
+      <ion-list *ngIf="financialSummary.debtors.length > 0">
+        <ion-list-header>Limpiadores con Saldo Negativo</ion-list-header>
+        <ion-item *ngFor="let debtor of financialSummary.debtors">
+          <ion-label>
+            <h2>{{ debtor.name }}</h2>
+          </ion-label>
+          <ion-label slot="end" color="danger">{{ debtor.wallet_balance | currency:'COP':'symbol':'1.0-0' }}</ion-label>
+        </ion-item>
+      </ion-list>
+
+      <!-- Historial de Transacciones Recientes -->
+      <ion-list>
+        <ion-list-header>Últimos Servicios Completados</ion-list-header>
+        <ion-item *ngFor="let tx of financialSummary.recent_transactions">
+          <ion-icon [name]="tx.payment_method === 'cash' ? 'cash-outline' : 'card-outline'" slot="start" [color]="tx.payment_method === 'cash' ? 'success' : 'primary'"></ion-icon>
+          <ion-label>
+            <h2>{{ tx.cleaner_name }}</h2>
+            <p>ID Servicio: #{{ tx.id }}</p>
+          </ion-label>
+          <ion-label slot="end" class="ion-text-right">
+            <strong>{{ tx.grand_total_cost | currency:'COP':'symbol':'1.0-0' }}</strong>
+          </ion-label>
+        </ion-item>
+      </ion-list>
+    </div>
+  </div>
+
+  <!-- VISTA DE SOLICITUDES DE RETIRO (PAYOUTS) -->
+  <div *ngIf="currentView === 'payouts'">
+    <div *ngIf="isLoadingPayouts" class="ion-text-center">
+      <ion-spinner name="crescent"></ion-spinner>
+      <p>Cargando solicitudes...</p>
+    </div>
+
+    <div *ngIf="!isLoadingPayouts && payoutRequests.length === 0" class="ion-text-center ion-padding-top">
+      <p>No hay solicitudes de retiro pendientes.</p>
+    </div>
+
+    <ion-list *ngIf="!isLoadingPayouts && payoutRequests.length > 0">
+      <ion-list-header>
+        <ion-label>Solicitudes Pendientes</ion-label>
+      </ion-list-header>
+      <ion-card *ngFor="let request of payoutRequests" class="ion-margin-bottom">
+        <ion-card-header>
+          <ion-card-title>{{ request.amount | currency:'COP':'symbol':'1.0-0' }}</ion-card-title>
+          <ion-card-subtitle>{{ request.cleaner_name }}</ion-card-subtitle>
+        </ion-card-header>
+        <ion-card-content>
+          <ion-label>
+            <h3>Datos para la Transferencia:</h3>
+            <p><strong>Banco:</strong> {{ request.bank_details_snapshot.bank_name }}</p>
+            <p><strong>Tipo Cuenta:</strong> {{ request.bank_details_snapshot.account_type }}</p>
+            <p><strong>Número Cuenta:</strong> {{ request.bank_details_snapshot.account_number }}</p>
+            <p><strong>Titular:</strong> {{ request.bank_details_snapshot.account_holder_name }}</p>
+            <p><strong>C.C./NIT:</strong> {{ request.bank_details_snapshot.account_holder_id }}</p>
+          </ion-label>
+
+          <ion-grid class="ion-no-padding ion-margin-top">
+            <ion-row>
+              <ion-col>
+                <ion-button expand="block" color="danger" fill="outline" (click)="processPayout(request, 'reject')">
+                  Rechazar
+                </ion-button>
+              </ion-col>
+              <ion-col>
+                <ion-button expand="block" color="success" (click)="processPayout(request, 'complete')">
+                  Marcar como Completado
+                </ion-button>
+              </ion-col>
+            </ion-row>
+          </ion-grid>
+
+        </ion-card-content>
+      </ion-card>
+    </ion-list>
+  </div>
+
+  <!-- VISTA DE GESTIÓN DE USUARIOS -->
+  <div *ngIf="currentView === 'users'">
+    <div *ngIf="isLoadingUsers" class="ion-text-center">
+      <ion-spinner name="crescent"></ion-spinner>
+      <p>Cargando usuarios...</p>
+    </div>
+
+    <ion-list *ngIf="!isLoadingUsers && users.length > 0">
+      <ion-list-header>
+        <ion-label>Todos los Usuarios</ion-label>
+      </ion-list-header>
+      <ion-item-sliding *ngFor="let user of users">
+        <ion-item>
+          <ion-icon [name]="user.role === 'cleaner' ? 'body-outline' : 'person-circle-outline'" slot="start" [color]="user.role === 'cleaner' ? 'secondary' : 'primary'"></ion-icon>
+          <ion-label>
+            <h2>{{ user.name }}</h2>
+            <p>{{ user.email }}</p>
+            <p>
+              <ion-badge [color]="user.role === 'admin' ? 'danger' : (user.role === 'cleaner' ? 'secondary' : 'light')">{{ user.role }}</ion-badge>
+            </p>
+          </ion-label>
+          <ion-label slot="end" class="ion-text-right" [color]="user.wallet_balance < 0 ? 'danger' : 'success'">
+            <p>Saldo</p>
+            <strong>{{ user.wallet_balance | currency:'COP':'symbol':'1.0-0' }}</strong>
+          </ion-label>
+        </ion-item>
+        <ion-item-options side="end">
+          <ion-item-option color="primary" (click)="editUser(user)"><ion-icon slot="icon-only" name="create-outline"></ion-icon></ion-item-option>
+          <ion-item-option color="danger" (click)="deleteUser(user)"><ion-icon slot="icon-only" name="trash-outline"></ion-icon></ion-item-option>
+        </ion-item-options>
+      </ion-item-sliding>
+    </ion-list>
+
+    <div *ngIf="!isLoadingUsers && users.length === 0" class="ion-text-center ion-padding-top">
+      <p>No hay usuarios registrados.</p>
+      <p>Toca el botón '+' para añadir el primero.</p>
+    </div>
+
+    <ion-fab vertical="bottom" horizontal="end" slot="fixed">
+      <ion-fab-button (click)="createUser()">
+        <ion-icon name="add"></ion-icon>
+      </ion-fab-button>
+    </ion-fab>
+  </div>
+
+  <!-- VISTA DE GESTIÓN DE SERVICIOS -->
+  <div *ngIf="currentView === 'services'">
+    <div *ngIf="isLoading" class="ion-text-center">
+      <ion-spinner name="crescent"></ion-spinner>
+    </div>
+
+    <ion-list *ngIf="!isLoading && services.length > 0">
+      <ion-item-sliding *ngFor="let service of services">
+        <ion-item [disabled]="!service.is_active">
+          <ion-label>
+            <h2>{{ service.name }}</h2>
+            <p>{{ service.description }}</p>
+            <p><strong>Precio Base:</strong> {{ service.base_price | currency:'USD' }}</p>
+          </ion-label>
+          <ion-note slot="end" [color]="service.is_active ? 'success' : 'danger'">
+            {{ service.is_active ? 'Activo' : 'Inactivo' }}
+          </ion-note>
+        </ion-item>
+        <ion-item-options side="end">
+          <ion-item-option color="primary" (click)="editService(service)"><ion-icon slot="icon-only" name="create-outline"></ion-icon></ion-item-option>
+          <ion-item-option color="danger" (click)="deleteService(service)"><ion-icon slot="icon-only" name="trash-outline"></ion-icon></ion-item-option>
+        </ion-item-options>
+      </ion-item-sliding>
+    </ion-list>
+
+    <div *ngIf="!isLoading && services.length === 0" class="ion-text-center ion-padding-top">
+      <p>No hay servicios maestros creados.</p>
+      <p>Toca el botón '+' para añadir el primero.</p>
+    </div>
+
+    <ion-fab vertical="bottom" horizontal="end" slot="fixed">
+      <ion-fab-button (click)="addService()"><ion-icon name="add"></ion-icon></ion-fab-button>
+    </ion-fab>
+  </div>
+</ion-content>

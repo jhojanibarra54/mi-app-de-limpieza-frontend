@@ -1,0 +1,31 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Seleccionar Mis Servicios</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="closeModal()">
+        <ion-icon slot="icon-only" name="close"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  <div *ngIf="isLoading" class="ion-text-center">
+    <ion-spinner name="crescent"></ion-spinner>
+  </div>
+
+  <ion-list *ngIf="!isLoading && masterServices.length > 0">
+    <ion-item *ngFor="let service of masterServices">
+      <ion-label>
+        <h2>{{ service.name }}</h2>
+        <p>{{ service.description }}</p>
+        <p><strong>Precio:</strong> {{ service.base_price | currency:'COP' }}</p>
+      </ion-label>
+      <ion-toggle slot="end" [checked]="service.offered" (ionChange)="onServiceToggle(service, $event)"></ion-toggle>
+    </ion-item>
+  </ion-list>
+
+  <div *ngIf="!isLoading && masterServices.length === 0" class="ion-text-center ion-padding-top">
+    <p>No hay servicios disponibles en el catálogo en este momento.</p>
+  </div>
+</ion-content>

@@ -1,0 +1,33 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Calificar Servicio</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="closeModal()">
+        <ion-icon slot="icon-only" name="close"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  <div class="ion-text-center">
+    <h4>¿Cómo calificarías el servicio?</h4>
+    <div class="stars-container">
+      <ion-icon
+        *ngFor="let i of [1, 2, 3, 4, 5]"
+        [name]="i <= rating ? 'star' : 'star-outline'"
+        [class.rated]="i <= rating"
+        (click)="setRating(i)">
+      </ion-icon>
+    </div>
+  </div>
+
+  <ion-item>
+    <ion-textarea [(ngModel)]="comment" label="Comentario (opcional)" labelPlacement="floating" [rows]="4"></ion-textarea>
+  </ion-item>
+
+  <ion-button expand="block" (click)="submitRating()" [disabled]="isSubmitting || rating === 0" class="ion-margin-top">
+    <ion-spinner *ngIf="isSubmitting" name="crescent"></ion-spinner>
+    <span *ngIf="!isSubmitting">Enviar Calificación</span>
+  </ion-button>
+</ion-content>

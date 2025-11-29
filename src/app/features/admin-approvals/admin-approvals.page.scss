@@ -1,0 +1,22 @@
+.empty-state {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  color: var(--ion-color-medium);
+  text-align: center;
+}
+
+ion-card-content {
+  p {
+    white-space: pre-wrap;
+    margin-bottom: 16px;
+  }
+}
+
+.action-buttons {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 16px;
+}

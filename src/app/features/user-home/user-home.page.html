@@ -1,0 +1,128 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-menu-button></ion-menu-button>
+    </ion-buttons>
+    <ion-title>{{ userName ? '¡Hola, ' + userName + '!' : 'Bienvenido' }}</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <div id="map" class="map-container"></div>
+
+  <!-- Grupo de Acciones Rápidas -->
+  <ng-container *ngIf="!noCleanersAvailable; else noCleanersTemplate">
+    <div class="action-buttons">
+      <ion-button expand="block" fill="outline" (click)="openFilterModal()">
+        <ion-icon name="filter-outline" slot="start"></ion-icon>
+        Filtrar
+      </ion-button>
+      <ion-button expand="block" (click)="requestRandomCleaner()">
+        <ion-icon name="shuffle-outline" slot="start"></ion-icon>
+        Al Azar
+      </ion-button>
+    </div>
+  </ng-container>
+
+  <!-- Plantilla para cuando no hay limpiadores -->
+  <ng-template #noCleanersTemplate>
+    <div class="no-cleaners-info ion-padding ion-text-center">
+      <p>No hay limpiadores conectados en este momento.</p>
+      <ion-button expand="block" (click)="broadcastRequest()">Enviar Solicitud a Todos</ion-button>
+    </div>
+  </ng-template>
+
+</ion-content>
+
+<div class="cleaner-info-panel" [class.visible]="selectedCleaner || (activeRequest && activeRequest.status === 'accepted')">
+  <div class="cleaner-info-content">
+    <div *ngIf="selectedCleaner || activeRequest" class="ion-padding" [ngSwitch]="activeRequest?.status">
+
+      <div *ngSwitchCase="'pending'">
+        <ion-spinner name="crescent"></ion-spinner>
+        <p>Esperando respuesta del limpiador...</p>
+      </div>
+
+      <div *ngSwitchCase="'accepted'" class="status-accepted">
+        <div class="accepted-header ion-text-center">
+          <h4>¡Servicio Aceptado!</h4>
+          <p>El limpiador está en camino.</p>
+          <p class="eta-display"><strong>{{ cleanerETA || 'Calculando...' }}</strong></p>
+        </div>
+        <div class="accepted-actions">
+          <ion-button expand="block" fill="outline" (click)="goToMessages()">
+            <ion-icon slot="start" name="chatbubbles-outline"></ion-icon>
+            Enviar Mensaje
+          </ion-button>
+        </div>
+      </div>
+
+      <div *ngSwitchCase="'pending_pin_verification'" class="status-accepted">
+        <div class="accepted-header ion-text-center">
+          <h4>¡Tu limpiador ha llegado!</h4>
+          <p>Para confirmar el inicio, muéstrale el siguiente PIN de seguridad.</p>
+          <div class="pin-display">
+            <h2>{{ activeRequest?.arrival_pin }}</h2>
+          </div>
+        </div>
+      </div>
+
+      <div *ngSwitchCase="'in_progress'" class="status-accepted">
+        <div class="accepted-header ion-text-center">
+          <h4>Servicio en curso</h4>
+          <p>Tu limpiador está trabajando.</p>
+        </div>
+      </div>
+
+
+      <div *ngSwitchCase="'rejected'" class="status-rejected">
+        <h4>Servicio Rechazado</h4>
+        <p>Puedes buscar otro limpiador.</p>
+      </div>
+
+      <div *ngSwitchCase="'completed'" class="status-completed">
+        <h4>¡Servicio Finalizado!</h4>
+        <p>Gracias por usar nuestros servicios.</p>
+        <ion-button size="small" fill="outline" (click)="openRatingModal()">Calificar Servicio</ion-button>
+      </div>
+
+      <ng-container *ngSwitchDefault>
+        <div *ngIf="selectedCleaner">
+        <div class="profile-header">
+          <ion-avatar>
+            <img [src]="selectedCleaner.photo_url || 'assets/icon/user-placeholder.jpg'" alt="Foto de {{ selectedCleaner.name }}">
+          </ion-avatar>
+          <div class="profile-details">
+            <h3>{{ selectedCleaner.name }}</h3>
+            <div class="stats">
+              <div class="stat-item">
+                <ion-icon name="star" color="warning"></ion-icon>
+                <span>{{ selectedCleaner.average_rating > 0 ? (selectedCleaner.average_rating | number:'1.1-1') : 'Nuevo' }}</span>
+              </div>
+              <div class="stat-item">
+                <ion-icon name="checkmark-circle" color="success"></ion-icon>
+                <span>{{ selectedCleaner.completed_services }} servicios</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <h4 class="services-title">Servicios que ofrece</h4>
+
+        <div *ngIf="isLoadingServices" class="ion-text-center ion-padding">
+          <ion-spinner name="crescent"></ion-spinner>
+        </div>
+
+        <div *ngIf="!isLoadingServices" class="services-list">
+          <p *ngFor="let service of selectedCleanerServices">{{ service.service_name }} - <strong>{{ service.price | currency:'USD' }}</strong></p>
+          <p *ngIf="selectedCleanerServices.length === 0">Este limpiador no ha registrado servicios.</p>
+        </div>
+
+        <ion-button expand="block" (click)="requestService()" [disabled]="isLoadingServices || selectedCleanerServices.length === 0">
+          Pedir Servicio
+        </ion-button>
+      </div>
+      </ng-container>
+    </div>
+  </div>
+</div>

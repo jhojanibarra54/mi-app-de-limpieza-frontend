@@ -1,0 +1,130 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-menu-button></ion-menu-button>
+    </ion-buttons>
+    <ion-title>{{ cleanerName ? '¡Hola, ' + cleanerName + '!' : 'Bienvenido' }}</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="manageServices()">
+        <ion-icon slot="icon-only" name="list-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+<ion-content class="ion-padding">
+  <div class="container">
+    <!-- Saldo de la Billetera -->
+    <div class="wallet-balance" *ngIf="profile">
+      <h3>Saldo de Billetera</h3>
+      <h2 [class.negative-balance]="profile.wallet_balance < 0">
+        {{ profile.wallet_balance | currency:'COP' }}
+      </h2>
+      <ion-grid>
+        <ion-row>
+          <ion-col>
+            <ion-button expand="block" fill="outline" (click)="openBankDetailsModal()">
+              Datos Bancarios
+            </ion-button>
+          </ion-col>
+          <ion-col *ngIf="profile.wallet_balance > 0">
+            <ion-button
+              expand="block"
+              (click)="requestPayout()">
+              Solicitar Retiro
+            </ion-button>
+          </ion-col>
+        </ion-row>
+      </ion-grid>
+    </div>
+    <div *ngIf="!isConnected; else connectedState">
+      <h2>Desconectado</h2>
+      <p>No aparecerás en el mapa para los usuarios.</p>
+      <ion-button expand="block" color="success" (click)="toggleConnection()">Conectarse</ion-button>
+    </div>
+    <ng-template #connectedState>
+      <h2>Conectado</h2>
+      <p>¡Estás visible! Esperando solicitudes de servicio.</p>
+      <ion-button expand="block" color="danger" (click)="toggleConnection()">Desconectarse</ion-button>
+
+      <!-- Contenedor para los diferentes estados del servicio -->
+      <div [ngSwitch]="serviceStatus">
+
+        <!-- Estado: Servicio Aceptado y en Camino -->
+        <div *ngSwitchCase="'accepted'">
+          <div class="service-in-progress-card">
+            <h4>En camino al servicio</h4>
+            <p>
+              <strong>Cliente:</strong> {{ activeService?.user_name }}<br>
+              <strong>Tiempo estimado de llegada:</strong> {{ eta || 'Calculando...' }}
+              <br><small><strong>Coords:</strong> {{ activeService?.user_latitude }}, {{ activeService?.user_longitude }}</small>
+            </p>
+            <div class="service-actions">
+              <ion-button expand="block" (click)="navigateToClient()"><ion-icon name="navigate-outline" slot="start"></ion-icon>Navegar al Destino</ion-button>
+              <ion-button expand="block" fill="outline" (click)="goToMessages()">Enviar Mensaje</ion-button>
+              <ion-button expand="block" color="secondary" (click)="arriveAtService()">He Llegado</ion-button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Estado: Esperando verificación de PIN -->
+        <div *ngSwitchCase="'pending_verification'">
+          <div class="service-in-progress-card">
+            <h4>Verificación de llegada</h4>
+            <p>Pídele al cliente el PIN de seguridad para iniciar el servicio.</p>
+            <!-- Campo para el PIN -->
+            <ion-input type="tel" pattern="[0-9]*" placeholder="Introduce el PIN de 4 dígitos" [(ngModel)]="pinValue" maxlength="4" class="ion-margin-bottom"></ion-input>
+            <ion-button expand="block" (click)="verifyPin()" [disabled]="!pinValue || pinValue.length < 4">Verificar e Iniciar</ion-button>
+          </div>
+        </div>
+
+        <!-- Estado: Servicio en Curso -->
+        <div *ngSwitchCase="'in_progress'">
+          <div class="service-in-progress-card">
+            <h4>Servicio en Curso</h4>
+            <p>
+              <strong>Cliente:</strong> {{ activeService?.user_name }}<br>
+              <strong>Valor del servicio:</strong> {{ activeService?.grand_total_cost | currency:'USD' }}
+            </p>
+            <div class="service-actions">
+              <ion-button expand="block" fill="outline" (click)="goToMessages()">Enviar Mensaje</ion-button>
+              <ion-button expand="block" color="primary" (click)="completeService()">Finalizar Servicio</ion-button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Estado: No hay servicio activo, esperando solicitudes -->
+        <div *ngSwitchCase="'waiting_for_request'">
+          <h4>¡Nueva Solicitud!</h4>
+          <p>
+            <strong>Cliente:</strong> {{ pendingRequest?.user_name }}<br>
+            <strong>Valor del servicio:</strong> {{ pendingRequest?.grand_total_cost | currency:'USD' }}
+          </p>
+          <div class="request-actions">
+            <ion-button fill="outline" color="danger" (click)="respondToRequest('reject')">Rechazar</ion-button>
+            <ion-button color="success" (click)="respondToRequest('accept')">Aceptar</ion-button>
+          </div>
+        </div>
+
+        <!-- Estado: Viendo solicitudes broadcast -->
+        <div *ngSwitchCase="'browsing_broadcast'">
+          <h4>Solicitudes Disponibles</h4>
+          <div *ngFor="let req of broadcastRequests" class="broadcast-request-card">
+            <p>
+              <strong>Cliente:</strong> {{ req.user_name }}<br>
+              <strong>Valor:</strong> {{ req.grand_total_cost | currency:'USD' }}
+            </p>
+            <ion-button expand="block" color="success" (click)="acceptBroadcastRequest(req.id)">
+              Aceptar Servicio
+            </ion-button>
+          </div>
+        </div>
+
+        <!-- Estado: Idle (no pending or active service) -->
+        <div *ngSwitchCase="'idle'">
+          <p>No hay solicitudes de servicio pendientes ni servicios activos.</p>
+        </div>
+
+      </div>
+    </ng-template>
+  </div>
+</ion-content>

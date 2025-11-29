@@ -1,0 +1,28 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Historial de Servicios</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  <div *ngIf="isLoading" class="ion-text-center">
+    <ion-spinner name="crescent"></ion-spinner>
+  </div>
+
+  <ion-list *ngIf="!isLoading && history.length > 0">
+    <ion-item *ngFor="let item of history">
+      <ion-label>
+        <h2>Servicio para {{ item.user_name }}</h2>
+        <p>{{ item.updated_at | date:'medium' }}</p>
+        <p>Valor: {{ item.grand_total_cost | currency:'USD' }}</p>
+      </ion-label>
+      <ion-badge slot="end" [color]="item.status === 'completed' ? 'success' : 'danger'">
+        {{ item.status === 'completed' ? 'Completado' : 'Rechazado' }}
+      </ion-badge>
+    </ion-item>
+  </ion-list>
+
+  <div *ngIf="!isLoading && history.length === 0" class="ion-text-center ion-padding-top">
+    <p>No tienes servicios en tu historial.</p>
+  </div>
+</ion-content>

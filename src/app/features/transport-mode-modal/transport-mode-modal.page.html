@@ -1,0 +1,30 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Modo de Transporte</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="cancel()">Cancelar</ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  <ion-list>
+    <ion-radio-group [(ngModel)]="transportMode">
+      <ion-list-header>
+        <ion-label>Elige cómo te desplazarás</ion-label>
+      </ion-list-header>
+
+      <ion-item>
+        <ion-radio value="driving">Carro / Moto</ion-radio>
+      </ion-item>
+      <ion-item>
+        <ion-radio value="bicycling">Bicicleta</ion-radio>
+      </ion-item>
+      <ion-item>
+        <ion-radio value="walking">A pie</ion-radio>
+      </ion-item>
+    </ion-radio-group>
+  </ion-list>
+
+  <ion-button expand="block" (click)="confirm()" class="ion-margin-top">Confirmar y Conectar</ion-button>
+</ion-content>

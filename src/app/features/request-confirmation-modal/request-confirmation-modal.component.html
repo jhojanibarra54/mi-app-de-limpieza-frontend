@@ -1,0 +1,73 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Confirmar Servicio</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="closeModal()">
+        <ion-icon slot="icon-only" name="close"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  <!-- VISTA PRINCIPAL DEL FORMULARIO -->
+  <div *ngIf="!isWaitingForVerification">
+    <ion-list>
+      <ion-list-header>
+        <ion-label>
+          <span *ngIf="!isBroadcast">Servicios disponibles de {{ cleaner?.name }}</span>
+          <span *ngIf="isBroadcast">Selecciona los servicios que necesitas</span>
+        </ion-label>
+      </ion-list-header>
+      <ion-item *ngFor="let service of services">
+        <ion-checkbox slot="start" (ionChange)="onServiceSelectionChange(service, $event)"></ion-checkbox>
+        <ion-label>
+          <h2>{{ service.service_name }}</h2>
+          <p>{{ service.description }}</p>
+          <p><strong>{{ service.price | currency:'USD' }}</strong></p>
+        </ion-label>
+      </ion-item>
+    </ion-list>
+
+    <ion-list>
+      <ion-list-header>
+        <ion-label>Método de Pago</ion-label>
+      </ion-list-header>
+      <ion-radio-group [(ngModel)]="paymentMethod">
+        <ion-item>
+          <ion-radio value="cash" labelPlacement="end">Efectivo</ion-radio>
+        </ion-item>
+        <ion-item>
+          <ion-radio value="bold" labelPlacement="end">Pagar con Tarjeta (Bold)</ion-radio>
+        </ion-item>
+      </ion-radio-group>
+    </ion-list>
+
+    <div class="summary ion-padding-top">
+      <p>Subtotal Servicios: <strong>{{ servicesTotalCost | currency:'USD' }}</strong></p>
+      <hr>
+      <h3>Total a Pagar: <strong>{{ grandTotalCost | currency:'USD' }}</strong></h3>
+    </div>
+
+    <ion-button expand="block" (click)="confirmRequest()" [disabled]="isSubmitting">
+      <ion-spinner *ngIf="isSubmitting" name="crescent"></ion-spinner>
+      <span *ngIf="!isSubmitting">Confirmar y Solicitar</span>
+    </ion-button>
+  </div>
+
+  <!-- VISTA DE ESPERA DE VERIFICACIÓN -->
+  <div *ngIf="isWaitingForVerification" class="verification-view">
+    <ion-icon name="card-outline" color="primary"></ion-icon>
+    <h2>Finaliza el pago en la nueva ventana</h2>
+    <p>Una vez completado el pago, cierra esa ventana y presiona el botón de abajo para confirmar tu servicio.</p>
+    
+    <ion-button expand="block" (click)="manualVerify()" [disabled]="isSubmitting">
+      <ion-spinner *ngIf="isSubmitting" name="crescent"></ion-spinner>
+      <span *ngIf="!isSubmitting">Verificar Pago</span>
+    </ion-button>
+
+    <ion-button expand="block" fill="clear" color="medium" (click)="cancelVerification()">
+      Cancelar
+    </ion-button>
+  </div>
+</ion-content>

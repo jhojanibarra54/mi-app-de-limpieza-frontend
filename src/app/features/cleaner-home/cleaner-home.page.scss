@@ -1,0 +1,82 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  text-align: center;
+  padding: 0 2rem;
+}
+
+.wallet-balance {
+  width: 100%;
+  padding: 16px;
+  background: var(--ion-color-light-tint);
+  border-radius: 12px;
+  margin-bottom: 24px;
+
+  h3 {
+    margin-top: 0;
+    font-size: 1em;
+    color: var(--ion-color-medium-shade);
+  }
+  h2.negative-balance {
+    color: var(--ion-color-danger);
+  }
+}
+
+.request-card {
+  margin-top: 24px;
+  padding: 16px;
+  border-radius: 12px;
+  background: var(--ion-color-light);
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+  border-left: 5px solid var(--ion-color-primary);
+  width: 100%;
+
+  h4 {
+    margin-top: 0;
+    font-weight: bold;
+    color: var(--ion-color-primary);
+  }
+
+  p {
+    line-height: 1.5;
+  }
+}
+
+.request-actions {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 16px;
+}
+.service-in-progress-card {
+  margin-top: 16px;
+  width: 100%;
+}
+
+.service-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 10px; /* Añade un espacio entre los botones */
+}
+
+
+.map-container {
+  height: 250px;
+  width: 100%;
+  margin-top: 20px;
+  border-radius: 12px;
+}
+
+.broadcast-request-card {
+  width: 100%;
+  border: 1px solid var(--ion-color-medium-tint);
+  border-radius: 8px;
+  padding: 12px;
+  margin-top: 12px;
+
+  p {
+    margin-top: 0;
+  }
+}

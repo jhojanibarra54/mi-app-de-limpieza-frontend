@@ -1,0 +1,46 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/user-home"></ion-back-button>
+    </ion-buttons>
+    <ion-title>Mis Servicios Activos</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  <div *ngIf="isLoading" class="ion-text-center">
+    <ion-spinner name="crescent"></ion-spinner>
+  </div>
+
+  <ion-list *ngIf="!isLoading && services.length > 0">
+    <ion-item *ngFor="let service of services" lines="inset">
+      <ion-label>
+        <h2>Servicio con {{ service.cleaner_name }}</h2>
+        <p>
+          <ion-note>{{ service.created_at | date:'mediumDate' }}</ion-note>
+        </p>
+        <p>Estado: <strong>{{ service.status === 'pending' ? 'Pendiente' : 'Aceptado' }}</strong></p>
+      </ion-label>
+
+      <div slot="end" class="ion-text-center">
+        <!-- Si está pendiente, mostrar botón de cancelar -->
+        <ion-button *ngIf="service.status === 'pending'" fill="clear" color="danger" (click)="confirmCancel(service.id)">
+          <ion-icon slot="icon-only" name="close-circle-outline"></ion-icon>
+        </ion-button>
+
+        <!-- Si está aceptado, mostrar botón para ver seguimiento -->
+        <ion-button *ngIf="service.status === 'accepted'" fill="clear" color="primary" (click)="viewTracking(service.id)">
+          <ion-icon slot="icon-only" name="eye-outline"></ion-icon>
+        </ion-button>
+
+        <ion-label class="ion-margin-top">
+          <h3 class="price-tag">{{ service.grand_total_cost | currency:'USD' }}</h3>
+        </ion-label>
+      </div>
+    </ion-item>
+  </ion-list>
+
+  <div *ngIf="!isLoading && services.length === 0" class="empty-state">
+    <p>No tienes servicios activos en este momento.</p>
+  </div>
+</ion-content>
