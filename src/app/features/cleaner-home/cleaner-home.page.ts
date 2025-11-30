@@ -43,6 +43,7 @@ export interface ServiceRequest {
   user_longitude: number;
   grand_total_cost: number;
   created_at: string;
+  auto_accepted?: boolean; // <-- AÑADIDO: Propiedad para saber si fue aceptado automáticamente
 }
 
 export interface CleanerProfile {

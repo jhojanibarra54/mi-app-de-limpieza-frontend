@@ -1,0 +1,9 @@
+{
+	"appId": "io.ionic.starter",
+	"appName": "Mi App de Limpieza",
+	"webDir": "www",
+	"server": {
+		"url": "http://localhost/php-api",
+		"cleartext": true
+	}
+}

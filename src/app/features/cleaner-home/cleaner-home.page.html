@@ -94,15 +94,28 @@
 
         <!-- Estado: No hay servicio activo, esperando solicitudes -->
         <div *ngSwitchCase="'waiting_for_request'">
-          <h4>¡Nueva Solicitud!</h4>
-          <p>
-            <strong>Cliente:</strong> {{ pendingRequest?.user_name }}<br>
-            <strong>Valor del servicio:</strong> {{ pendingRequest?.grand_total_cost | currency:'USD' }}
-          </p>
-          <div class="request-actions">
-            <ion-button fill="outline" color="danger" (click)="respondToRequest('reject')">Rechazar</ion-button>
-            <ion-button color="success" (click)="respondToRequest('accept')">Aceptar</ion-button>
+          <!-- Vista para servicios pagados con tarjeta (auto-aceptados) -->
+          <div *ngIf="pendingRequest?.auto_accepted; else standardRequest">
+            <h4>¡Servicio Confirmado!</h4>
+            <p>
+              Este servicio fue pagado con tarjeta y se ha <strong>aceptado automáticamente</strong>.
+            </p>
+            <p><strong>Cliente:</strong> {{ pendingRequest?.user_name }}</p>
+            <ion-button expand="block" color="success" (click)="respondToRequest('accept')">OK, Entendido</ion-button>
           </div>
+
+          <!-- Vista estándar para pagos en efectivo -->
+          <ng-template #standardRequest>
+            <h4>¡Nueva Solicitud!</h4>
+            <p>
+              <strong>Cliente:</strong> {{ pendingRequest?.user_name }}<br>
+              <strong>Valor del servicio:</strong> {{ pendingRequest?.grand_total_cost | currency:'USD' }}
+            </p>
+            <div class="request-actions">
+              <ion-button fill="outline" color="danger" (click)="respondToRequest('reject')">Rechazar</ion-button>
+              <ion-button color="success" (click)="respondToRequest('accept')">Aceptar</ion-button>
+            </div>
+          </ng-template>
         </div>
 
         <!-- Estado: Viendo solicitudes broadcast -->
