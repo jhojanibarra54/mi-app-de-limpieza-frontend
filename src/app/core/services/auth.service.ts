@@ -38,7 +38,8 @@ export class AuthService {
 
   private connectionStatusApiUrl = `${environment.apiUrl}/cleaners/toggle-connection.php`;
 
-  private apiUrl = 'http://localhost/php-api/api/auth/login.php';
+  // Apuntamos a la carpeta 'auth' del backend para centralizar las rutas.
+  private apiUrl = `${environment.apiUrl}/auth`;
 
   constructor() {
     this.loadToken();
@@ -110,7 +111,7 @@ export class AuthService {
   }
 
   login(credentials: { email: string, password: string }): Observable<LoginResponse> {
-    return this.http.post<LoginResponse>(this.apiUrl, credentials).pipe(
+    return this.http.post<LoginResponse>(`${this.apiUrl}/login.php`, credentials).pipe(
       tap(async (res) => {
         await Preferences.set({ key: TOKEN_KEY, value: JSON.stringify(res) });
         this.updateAuthState(res);
@@ -121,6 +122,14 @@ export class AuthService {
         return throwError(() => err);
       })
     );
+  }
+
+  /**
+   * NUEVO MÉTODO: Registra un nuevo usuario llamando al endpoint correspondiente.
+   * @param userDetails - Objeto con name, email, phone y password.
+   */
+  register(userDetails: any): Observable<any> {
+    return this.http.post(`${this.apiUrl}/register.php`, userDetails);
   }
 
   /**

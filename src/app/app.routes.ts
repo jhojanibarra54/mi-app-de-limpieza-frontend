@@ -111,4 +111,14 @@ export const routes: Routes = [
     path: 'transport-mode-modal',
     loadComponent: () => import('./features/transport-mode-modal/transport-mode-modal.page').then( m => m.TransportModeModalPage)
   },
+  {
+    // Página a la que se redirige si la verificación por correo es exitosa.
+    path: 'verification-success',
+    loadComponent: () => import('./features/auth/verification-success/verification-success.page').then( m => m.VerificationSuccessPage)
+  },
+  {
+    // Página a la que se redirige si la verificación por correo falla.
+    path: 'verification-failed',
+    loadComponent: () => import('./features/auth/verification-failed/verification-failed.page').then( m => m.VerificationFailedPage)
+  },
 ];

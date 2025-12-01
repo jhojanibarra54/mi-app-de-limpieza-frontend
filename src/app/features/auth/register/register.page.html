@@ -8,6 +8,18 @@
 </ion-header>
 
 <ion-content class="ion-padding">
+  <!-- Botón de registro con Google -->
+  <ion-button expand="block" class="google-btn" (click)="registerWithGoogle()">
+    <ion-icon name="logo-google" slot="start"></ion-icon>
+    Registrarme con Google
+  </ion-button>
+
+  <!-- Separador -->
+  <div class="separator">
+    <span>O regístrate con tu correo</span>
+  </div>
+
+  <!-- Formulario de registro tradicional -->
   <form [formGroup]="registerForm" (ngSubmit)="onRegister()">
     <ion-item>
       <ion-input label="Nombre completo" labelPlacement="floating" formControlName="name" type="text"></ion-input>
@@ -16,10 +28,21 @@
       <ion-input label="Correo electrónico" labelPlacement="floating" formControlName="email" type="email"></ion-input>
     </ion-item>
     <ion-item>
+      <ion-input label="Teléfono (WhatsApp)" labelPlacement="floating" formControlName="phone" type="tel"></ion-input>
+    </ion-item>
+    <ion-item>
       <ion-input label="Contraseña" labelPlacement="floating" formControlName="password" type="password"></ion-input>
     </ion-item>
-    <ion-button type="submit" expand="block" class="ion-margin-top" [disabled]="registerForm.invalid">
-      Registrarme
+
+    <!-- El botón ahora muestra un spinner mientras se procesa el registro -->
+    <ion-button type="submit" expand="block" class="ion-margin-top" [disabled]="registerForm.invalid || isSubmitting">
+      <span *ngIf="!isSubmitting">Registrarme</span>
+      <ion-spinner *ngIf="isSubmitting" name="crescent"></ion-spinner>
     </ion-button>
   </form>
+
+  <!-- Enlace para ir a la página de inicio de sesión -->
+  <div class="ion-text-center ion-margin-top">
+    <a routerLink="/login">¿Ya tienes una cuenta? Inicia sesión</a>
+  </div>
 </ion-content>
