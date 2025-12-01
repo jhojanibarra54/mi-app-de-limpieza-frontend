@@ -1,19 +1,39 @@
+<!--
+  Título: Plantilla Raíz de la Aplicación (app.component.html)
+  Descripción:
+  Este archivo define la estructura visual principal de toda la aplicación.
+  Contiene el menú de navegación lateral (Side Menu) y el contenedor
+  donde se cargarán todas las demás páginas. Es el esqueleto sobre el cual
+  funciona toda la interfaz de usuario.
+-->
 <ion-app>
+  <!-- MENÚ DE NAVEGACIÓN LATERAL -->
+  <!-- Este es el menú deslizable (tipo hamburguesa) que contiene los enlaces de navegación principales. -->
   <ion-menu #menu contentId="main-content" type="overlay">
+    <!-- Cabecera del menú -->
     <ion-header>
       <ion-toolbar>
         <ion-title>Menú</ion-title>
       </ion-toolbar>
     </ion-header>
+    <!-- Contenido del menú -->
     <ion-content>
+      <!-- PRIMERA SECCIÓN: ENLACES DE NAVEGACIÓN DINÁMICOS -->
       <ion-list id="inbox-list">
         <ion-list-header>CleanApp</ion-list-header>
+        <!-- Muestra el nombre del usuario que ha iniciado sesión. El pipe 'async' se suscribe al Observable. -->
         <ion-note>{{ authService.currentUserName$ | async }}</ion-note>
 
+        <!-- Bucle para generar los elementos del menú dinámicamente. -->
+        <!-- Itera sobre el array 'appPages' definido en app.component.ts. -->
         <ng-container *ngFor="let p of appPages">
+          <!-- Obtiene el rol del usuario actual ('user' o 'cleaner') de forma asíncrona. -->
           <ng-container *ngIf="authService.currentUserRole$ | async as role">
+            <!-- Muestra el elemento del menú SOLO si el rol del usuario actual está incluido en el array 'p.roles' de la página. -->
             <ion-menu-toggle auto-hide="false" *ngIf="p.roles.includes(role)">
-            <ion-item [routerLink]="p.url" routerDirection="root" lines="none" detail="false" routerLinkActive="selected">
+              <!-- Elemento de la lista que funciona como un enlace. Al hacer clic, navega a la URL especificada. -->
+              <!-- 'routerLinkActive="selected"' aplica una clase CSS cuando la ruta está activa. -->
+              <ion-item [routerLink]="p.url" routerDirection="root" lines="none" detail="false" routerLinkActive="selected">
                 <ion-icon aria-hidden="true" slot="start" [name]="p.icon"></ion-icon>
                 <ion-label>{{ p.title }}</ion-label>
               </ion-item>
@@ -22,17 +42,18 @@
         </ng-container>
       </ion-list>
 
+      <!-- SEGUNDA SECCIÓN: ACCIONES GENERALES (Perfil y Cerrar Sesión) -->
       <ion-list id="labels-list">
-        <ion-item button (click)="editProfile()">
-          <ion-icon slot="start" name="person-circle-outline"></ion-icon>
-          <ion-label>Editar Perfil</ion-label>
-        </ion-item>
-        <ion-item button (click)="logout()">
-          <ion-icon slot="start" name="log-out-outline"></ion-icon>
-          <ion-label>Cerrar Sesión</ion-label>
-        </ion-item>
+        <!-- Botón para abrir el modal de edición de perfil. -->
+        <ion-item button (click)="editProfile()" lines="none"><ion-icon slot="start" name="person-circle-outline"></ion-icon><ion-label>Editar Perfil</ion-label></ion-item>
+        <!-- Botón para ejecutar la función de cierre de sesión. -->
+        <ion-item button (click)="logout()" lines="none"><ion-icon slot="start" name="log-out-outline"></ion-icon><ion-label>Cerrar Sesión</ion-label></ion-item>
       </ion-list>
     </ion-content>
   </ion-menu>
+
+  <!-- CONTENEDOR PRINCIPAL DE CONTENIDO -->
+  <!-- Esta es la parte más importante. Actúa como un lienzo donde Ionic/Angular carga el contenido de la página actual. -->
+  <!-- El menú se desliza sobre este contenedor. -->
   <ion-router-outlet id="main-content"></ion-router-outlet>
 </ion-app>
