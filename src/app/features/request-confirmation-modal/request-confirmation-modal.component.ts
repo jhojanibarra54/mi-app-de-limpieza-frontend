@@ -211,9 +211,9 @@ export class RequestConfirmationModalComponent implements OnInit {
       payment_method: this.paymentMethod,
       grand_total_cost: this.grandTotalCost, // <-- ¡DATO FALTANTE!
       payment_reference: this.paymentLinkIdForVerification || null,
-      // ¡LA SOLUCIÓN! Añadimos las coordenadas y reemplazamos la coma por un punto.
-      user_latitude: String(this.userCoords.lat).replace(',', '.'),
-      user_longitude: String(this.userCoords.lng).replace(',', '.')
+      // ¡LA SOLUCIÓN! Añadimos las coordenadas con los nombres que el backend espera.
+      latitude: String(this.userCoords.lat).replace(',', '.'),
+      longitude: String(this.userCoords.lng).replace(',', '.')
     };
 
     // Decidimos a qué endpoint llamar

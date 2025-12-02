@@ -371,19 +371,28 @@ export class UserHomePage implements AfterViewInit, OnDestroy {
   // y un mecanismo para que los cleaners la vean y la acepten (first-come, first-served).
   
   async requestService() {
-    if (!this.selectedCleaner || !this.userCoords) {
-      if (!this.userCoords) {
-        this.showStatusUpdateToast('No se pudo obtener tu ubicación. Activa el GPS e intenta de nuevo.', 'danger');
-      }
+    if (!this.selectedCleaner) {
       return;
     }
-
+  
+    // --- INICIO DE LA SOLUCIÓN ---
+    // 1. Obtenemos la ubicación MÁS RECIENTE justo antes de solicitar.
+    try {
+      const position = await Geolocation.getCurrentPosition({ enableHighAccuracy: true });
+      this.userCoords = L.latLng(position.coords.latitude, position.coords.longitude);
+    } catch (error) {
+      this.showStatusUpdateToast('No se pudo obtener tu ubicación. Activa el GPS e intenta de nuevo.', 'danger');
+      return; // Detenemos si no hay ubicación.
+    }
+    // --- FIN DE LA SOLUCIÓN ---
+  
     const modal = await this.modalCtrl.create({
       component: RequestConfirmationModalComponent,
       componentProps: {
         cleaner: this.selectedCleaner,
         services: this.selectedCleanerServices,
-        userCoords: this.userCoords // <-- PASAMOS LAS COORDENADAS AL MODAL
+        // Ahora pasamos las coordenadas frescas al modal.
+        userCoords: this.userCoords 
       }
     });
 

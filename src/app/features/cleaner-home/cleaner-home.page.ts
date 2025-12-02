@@ -222,9 +222,12 @@ export class CleanerHomePage implements OnInit, OnDestroy {
   startLocationUpdates() {
     // Enviamos la ubicación cada 15 segundos
     this.locationUpdateSubscription = interval(LOCATION_UPDATE_INTERVAL).subscribe(async () => {
-      try { // Added try-catch for Geolocation
+      try {
         const position = await Geolocation.getCurrentPosition();
-        this.http.post(this.updateLocationApiUrl, { latitude: position.coords.latitude, longitude: position.coords.longitude }).subscribe({
+        // ¡LA SOLUCIÓN! Aseguramos que el payload se construya correctamente.
+        const payload = { latitude: position.coords.latitude, longitude: position.coords.longitude };
+
+        this.http.post(this.updateLocationApiUrl, payload).subscribe({
           error: (err) => console.error('Error updating location:', err) // Log error but don't stop updates
         });
       } catch (e) {
@@ -268,21 +271,22 @@ export class CleanerHomePage implements OnInit, OnDestroy {
   }
 
   private checkForActiveService() {
-    this.http.get<ServiceRequest | null>(`${this.requestApiUrl}get_active.php`).subscribe(service => {
+    // Ahora get_active.php devuelve el objeto ServiceRequest completo o null.
+    this.http.get<ServiceRequest & { status: string } | null>(`${this.requestApiUrl}get_active.php`).subscribe(service => {
       if (service) {
-        // La respuesta de get_active.php ahora puede tener múltiples estados
-        this.activeService = service;
-        // Forzamos el tipo para acceder a la propiedad 'status' que sabemos que viene del backend
-        const serviceWithStatus = service as any;
+        this.activeService = service; // El objeto ya está completo, con coordenadas.
 
-        if (serviceWithStatus.status === 'in_progress') {
+        // Asignamos el estado de la UI basado en el estado del servicio
+        if (service.status === 'in_progress') {
           this.serviceStatus = 'in_progress';
+        } else if (service.status === 'pending_verification') {
+          this.serviceStatus = 'pending_verification';
         } else {
-          // Si no es 'in_progress', asumimos que es 'accepted' (en camino)
+          // Para 'accepted' y 'arrived'
           this.serviceStatus = 'accepted';
-          this.eta = '5 min'; // Placeholder para el ETA
+          this.eta = '5 min'; // Placeholder
         }
-      } else if (this.activeService && this.serviceStatus !== 'idle') {
+      } else {
         this.activeService = null;
         this.serviceStatus = 'idle';
       }
@@ -299,7 +303,7 @@ export class CleanerHomePage implements OnInit, OnDestroy {
     const payload = { request_id: this.pendingRequest.id, response };
     this.http.post(`${this.requestApiUrl}respond_to_request.php`, payload).subscribe(async () => {
       if (response === 'accept') {
-        this.activeService = this.pendingRequest; // Movemos la solicitud a "activa"
+        this.activeService = this.pendingRequest; // El objeto ya contiene las coordenadas.
         this.serviceStatus = 'accepted'; // Set status to accepted
         // TODO: Start ETA calculation
         this.eta = '5 min'; // Placeholder
@@ -318,8 +322,7 @@ export class CleanerHomePage implements OnInit, OnDestroy {
     // Llamamos al nuevo endpoint que creamos en el Paso 3
     this.http.post<any>(`${this.requestApiUrl}accept_broadcast_request.php`, payload).subscribe({
       next: (res) => {
-        // El backend nos devuelve la solicitud completa si la ganamos
-        this.activeService = res.service_request;
+        this.activeService = res.service_request; // El objeto de la API ya contiene todo.
         this.serviceStatus = 'accepted';
         this.broadcastRequests = []; // Limpiamos la lista
         this.pendingRequest = null;
