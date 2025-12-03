@@ -19,6 +19,8 @@ import { HttpClient } from '@angular/common/http';
 import { AuthService } from '../../core/services/auth.service';
 import { addIcons } from 'ionicons';
 import { close } from 'ionicons/icons';
+import { environment } from '../../../environments/environment';
+
 
 @Component({
   selector: 'app-edit-profile-modal',

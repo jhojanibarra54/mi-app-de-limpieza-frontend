@@ -6,9 +6,7 @@ import {
   IonToolbar,
   IonTitle,
   IonContent,
-  IonList,
   IonItem,
-  IonLabel,
   IonButtons,
   IonButton,
   IonIcon,
@@ -20,13 +18,14 @@ import {
 import { addIcons } from 'ionicons';
 import { close, star, starOutline } from 'ionicons/icons';
 import { HttpClient } from '@angular/common/http';
+import { environment } from '../../../environments/environment';
 
 @Component({
   selector: 'app-rating-modal',
   templateUrl: './rating-modal.component.html',
   styleUrls: ['./rating-modal.component.scss'],
   standalone: true, // IonList and IonLabel are not used in the template
-  imports: [CommonModule, FormsModule, IonHeader, IonToolbar, IonTitle, IonContent, IonItem, IonButtons, IonButton, IonIcon, IonSpinner, IonTextarea]
+  imports: [CommonModule, FormsModule, IonHeader, IonToolbar, IonTitle, IonContent, IonItem, IonButtons, IonButton, IonIcon, IonSpinner, IonTextarea],
 })
 export class RatingModalComponent {
   @Input() serviceRequest: any;
@@ -39,7 +38,7 @@ export class RatingModalComponent {
   private http = inject(HttpClient);
   private toastCtrl = inject(ToastController);
 
-  private apiUrl = 'http://localhost/php-api/api/customers/submit_rating.php';
+  private apiUrl = `${environment.apiUrl}/customers/submit_rating.php`;
 
   constructor() {
     addIcons({ close, star, starOutline });

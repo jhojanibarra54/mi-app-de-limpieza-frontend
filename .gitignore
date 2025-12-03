@@ -68,3 +68,9 @@ testem.log
 # System files
 .DS_Store
 Thumbs.db
+
+# Environment variables
+.env*
+
+# Ignorar archivos de llaves de firma de Android
+*.keystore

@@ -21,6 +21,8 @@ import {
 import { addIcons } from 'ionicons';
 import { close } from 'ionicons/icons';
 import { HttpClient } from '@angular/common/http';
+import { environment } from '../../../environments/environment';
+
 
 export interface MasterService {
   id: number;

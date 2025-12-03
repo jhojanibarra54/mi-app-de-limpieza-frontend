@@ -37,6 +37,8 @@ import {
 import { addIcons } from 'ionicons'; // Se añaden los nuevos iconos
 import { logOutOutline, add, createOutline, trashOutline, arrowBackOutline, listOutline, personAddOutline, cashOutline, cardOutline, trendingUpOutline, trendingDownOutline, walletOutline, peopleOutline, bodyOutline, personCircleOutline } from 'ionicons/icons';
 import { HttpClient } from '@angular/common/http';
+import { environment } from '../../../environments/environment';
+
 import { AuthService } from '../../core/services/auth.service';
 
 // Definimos una interfaz para la respuesta del API

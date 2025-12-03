@@ -29,6 +29,7 @@ import { environment } from '../../../environments/environment';
 // Reutilizamos la interfaz del user-home
 import { CleanerService } from '../user-home/user-home.page';
 
+
 @Component({
   selector: 'app-request-confirmation-modal',
   templateUrl: './request-confirmation-modal.component.html',
@@ -57,7 +58,8 @@ export class RequestConfirmationModalComponent implements OnInit {
   private http = inject(HttpClient);
   private toastCtrl = inject(ToastController);
 
-  private customerApiUrl = 'http://localhost/php-api/api/customers/';
+  private customerApiUrl = `${environment.apiUrl}/customers`;
+
   // Reutilizamos el endpoint que creamos para el modal de filtro
   private allServicesApiUrl = `${environment.apiUrl}/common/get_all_services.php`;
 
@@ -137,7 +139,7 @@ export class RequestConfirmationModalComponent implements OnInit {
     };
 
     // 3. Llama a un nuevo endpoint en nuestro backend para obtener el link de pago.
-    this.http.post<{ payment_link_url: string, payment_link_id: string }>(`http://localhost/php-api/api/payments/create_bold_link.php`, paymentData).subscribe({
+    this.http.post<{ payment_link_url: string, payment_link_id: string }>(`${environment.apiUrl}/payments/create_bold_link.php`, paymentData).subscribe({
       next: async (response) => {
         const { payment_link_url: checkoutUrl, payment_link_id: paymentLinkId } = response;
         
@@ -176,7 +178,7 @@ export class RequestConfirmationModalComponent implements OnInit {
 
   private verifyBoldPayment(paymentLinkId: string, originalReference: string) {
     // El navegador se cerró, ahora verificamos el estado del pago de forma segura en nuestro backend.
-    this.http.post<{ status: string }>(`http://localhost/php-api/api/payments/verify_bold.php`, { payment_link_id: paymentLinkId }).subscribe({
+    this.http.post<{ status: string }>(`${environment.apiUrl}/payments/verify_bold.php`, { payment_link_id: paymentLinkId }).subscribe({
       next: (response) => {
         if (response.status === 'PAID') { // El nuevo estado de éxito es 'PAID'
           // Si el pago fue aprobado, AHORA SÍ creamos la solicitud de servicio.
@@ -217,7 +219,7 @@ export class RequestConfirmationModalComponent implements OnInit {
     };
 
     // Decidimos a qué endpoint llamar
-    const apiUrl = this.isBroadcast ? `${this.customerApiUrl}create_broadcast_request.php` : `${this.customerApiUrl}create_request.php`;
+    const apiUrl = this.isBroadcast ? `${this.customerApiUrl}/create_broadcast_request.php` : `${this.customerApiUrl}/create_request.php`;
 
     this.http.post<{ message: string, request_id: number }>(apiUrl, payload).subscribe({
       next: async (res) => {

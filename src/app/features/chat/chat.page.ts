@@ -7,7 +7,9 @@ import { HttpClient } from '@angular/common/http';
 import { Subscription, interval, switchMap, startWith } from 'rxjs';
 import { addIcons } from 'ionicons';
 import { send } from 'ionicons/icons';
+import { environment } from '../../../environments/environment';
 import { AuthService } from 'src/app/core/services/auth.service';
+
 
 interface Message {
   id: number;

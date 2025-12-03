@@ -19,6 +19,7 @@ import {
 } from '@ionic/angular/standalone'; // IonIcon y IonSpinner añadidos
 import { addIcons } from 'ionicons';
 import { logoGoogle } from 'ionicons/icons';
+import { environment } from '../../../../environments/environment';
 import { AuthService } from 'src/app/core/services/auth.service';
 
 @Component({

@@ -8,7 +8,7 @@
  */
 
 import { ApplicationConfig, LOCALE_ID } from '@angular/core';
-import { RouteReuseStrategy, provideRouter, withPreloading, PreloadAllModules } from '@angular/router';
+import { RouteReuseStrategy, provideRouter, withPreloading, PreloadAllModules, withHashLocation } from '@angular/router';
 import { IonicRouteStrategy, provideIonicAngular } from '@ionic/angular/standalone';
 import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import { registerLocaleData } from '@angular/common';
@@ -39,8 +39,8 @@ export const appConfig: ApplicationConfig = {
 
     // 3. Inicialización de Ionic y Angular:
     provideIonicAngular({}),
-    provideRouter(routes, withPreloading(PreloadAllModules)), // Configura el enrutador de Angular con las rutas definidas y una estrategia de precarga de módulos para mejorar el rendimiento.
-
+    provideRouter(routes, withPreloading(PreloadAllModules), withHashLocation()), // Configura el enrutador de Angular con las rutas definidas y una estrategia de precarga de módulos para mejorar el rendimiento.
+    provideHttpClient(withInterceptors([authInterceptor])), // Configura el cliente HTTP con el interceptor de autenticación.
     // 4. Configuración del Cliente HTTP:
     // Habilita el servicio HttpClient y registra el `authInterceptor`.
     // Esto significa que cada petición HTTP que se haga en la app pasará automáticamente por el interceptor.

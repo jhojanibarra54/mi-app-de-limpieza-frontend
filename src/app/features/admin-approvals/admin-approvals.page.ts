@@ -6,6 +6,7 @@ import { HttpClient } from '@angular/common/http';
 import { addIcons } from 'ionicons';
 import { checkmarkCircleOutline, closeCircleOutline, documentTextOutline, logOutOutline } from 'ionicons/icons';
 import { AuthService } from 'src/app/core/services/auth.service';
+import { environment } from '../../../environments/environment';
 
 interface Application {
   id: number;

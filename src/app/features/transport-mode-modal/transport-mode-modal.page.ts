@@ -16,6 +16,8 @@ import {
   IonButtons,
   ModalController
 } from '@ionic/angular/standalone';
+import { environment } from '../../../environments/environment';
+
 
 @Component({
   selector: 'app-transport-mode-modal', // El selector está bien

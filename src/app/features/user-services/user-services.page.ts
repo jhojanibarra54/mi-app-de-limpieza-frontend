@@ -6,6 +6,7 @@ import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { addIcons } from 'ionicons';
 import { eyeOutline, closeCircleOutline } from 'ionicons/icons';
+import { environment } from '../../../environments/environment';
 
 interface UserService {
   id: number;

@@ -36,6 +36,7 @@ import { Router, RouterLink } from '@angular/router';
 import { environment } from '../../../environments/environment';
 import { Preferences } from '@capacitor/preferences';
 
+
 declare var google: any; // Declaramos google para evitar errores de TypeScript
 
 export interface CleanerService {
